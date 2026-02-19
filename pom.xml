@@ -39,6 +39,13 @@
 			<version>${mysql-connector.version}</version>
 		</dependency>
 
+		<!-- MariaDB Connector -->
+		<dependency>
+			<groupId>org.mariadb.jdbc</groupId>
+			<artifactId>mariadb-java-client</artifactId>
+			<version>2.7.4</version> <!-- o la última estable -->
+		</dependency>
+
 		<!-- Spring Boot Starter Test (optional) -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -68,6 +75,13 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

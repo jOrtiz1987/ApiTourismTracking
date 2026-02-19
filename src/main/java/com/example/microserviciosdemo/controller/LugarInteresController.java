@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/edificios")
+    @RequestMapping("/api/edificios")
 public class LugarInteresController {
 
     private final LugarInteresRepository repository;
@@ -40,7 +40,7 @@ public class LugarInteresController {
         List<LugarInteres> todosLosLugares = repository.findAll();
         LugarInteres lugarMasCercano = null;
         double distanciaMinima = Double.MAX_VALUE; // Inicializa la distancia mínima a un valor alto
-
+        System.out.println("Coordenadas = lat - " + latitud + " - long - " + longitud);
         for (LugarInteres lugar : todosLosLugares) {
             double distancia = calcularDistancia(latitud, longitud, lugar.getLatitud(), lugar.getLongitud());
             System.out.println("Distancia = " + distancia);
