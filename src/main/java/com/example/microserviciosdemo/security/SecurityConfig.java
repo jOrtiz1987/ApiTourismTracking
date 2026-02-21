@@ -45,10 +45,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.cors().and().csrf().disable()
+                .headers().frameOptions().disable()
+                .and()
                 .authorizeRequests()
                 .antMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
-                .antMatchers("/api/auth/login", "/api/usuarios/validarUsuario/**", "/api/usuarios").permitAll() // Permits
-                                                                                                                // signup/login
+                .antMatchers("/api/auth/login", "/api/usuarios/validarUsuario/**", "/api/usuarios", "/api/reports/**")
+                .permitAll() // Permits signup/login and reports (for iframe/downloads)
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement()
