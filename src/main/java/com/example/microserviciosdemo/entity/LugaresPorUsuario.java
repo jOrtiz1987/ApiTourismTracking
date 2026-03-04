@@ -12,8 +12,8 @@ public class LugaresPorUsuario {
     private int idLugaresPorUsuario;
 
     @ManyToOne
-    @JoinColumn(name = "idLugarInteres")
-    private LugarInteres lugarInteres;
+    @JoinColumn(name = "idCategoria")
+    private Categoria categoria;
 
     @ManyToOne
     @JoinColumn(name = "idPeriodoVacacional")
@@ -27,12 +27,12 @@ public class LugaresPorUsuario {
         this.idLugaresPorUsuario = idLugaresPorUsuario;
     }
 
-    public LugarInteres getLugarInteres() {
-        return lugarInteres;
+    public Categoria getCategoria() {
+        return categoria;
     }
 
-    public void setLugarInteres(LugarInteres lugarInteres) {
-        this.lugarInteres = lugarInteres;
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
     }
 
     public PeriodoVacacional getIdPeriodoVacacional() {
