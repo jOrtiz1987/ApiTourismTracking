@@ -10,6 +10,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class MicroserviciosDemoApplication {
 
 	public static void main(String[] args) {
+
+
+
 		SpringApplication.run(MicroserviciosDemoApplication.class, args);
 	}
 

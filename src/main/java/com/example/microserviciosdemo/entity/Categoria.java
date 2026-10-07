@@ -14,13 +14,32 @@ public class Categoria {
     @Column(name = "descripcion")
     private String descripcion;
 
+    public Categoria(){
+
+    }
+
+    public Categoria(int id, String descripcion){
+        this.id = id;
+        this.descripcion = descripcion;
+    }
+
+    public Categoria(String descripcion){
+        this.descripcion = descripcion;
+    }
+
+    public Categoria(String descripcion, int id){
+        this.id = id;
+        this.descripcion = descripcion;
+    }
+
+    public Categoria(int id){
+        this.id = id;
+    }
+
     public int getId() {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public String getDescripcion() {
         return descripcion;

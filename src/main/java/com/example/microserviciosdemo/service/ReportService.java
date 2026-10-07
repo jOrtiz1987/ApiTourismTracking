@@ -112,4 +112,97 @@ public class ReportService {
                 .contentType(MediaType.TEXT_HTML)
                 .body(fileResponse.getBody());
     }
+
+    public Map<String, Object> trainRecommendationModel() {
+        String url = pythonApiUrl + "/recommend/train";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("x-api-key", pythonApiKey);
+
+        ResponseEntity<Map> response = restTemplate.exchange(
+                url,
+                HttpMethod.POST,
+                new HttpEntity<>(headers),
+                Map.class
+        );
+        return response.getBody();
+    }
+
+    public Map<String, Object> predictNextMonument(Map<String, Object> requestBody) {
+        String url = pythonApiUrl + "/recommend/next";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("x-api-key", pythonApiKey);
+
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
+        ResponseEntity<Map> response = restTemplate.exchange(
+                url,
+                HttpMethod.POST,
+                requestEntity,
+                Map.class
+        );
+        return response.getBody();
+    }
+
+    public Map<String, Object> trainProfileModel() {
+        String url = pythonApiUrl + "/recommend/profile/train";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("x-api-key", pythonApiKey);
+
+        ResponseEntity<Map> response = restTemplate.exchange(
+                url,
+                HttpMethod.POST,
+                new HttpEntity<>(headers),
+                Map.class
+        );
+        return response.getBody();
+    }
+
+    public Map<String, Object> predictTouristProfile(Map<String, Object> requestBody) {
+        String url = pythonApiUrl + "/recommend/profile";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("x-api-key", pythonApiKey);
+
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
+        ResponseEntity<Map> response = restTemplate.exchange(
+                url,
+                HttpMethod.POST,
+                requestEntity,
+                Map.class
+        );
+        return response.getBody();
+    }
+
+    public Map<String, Object> trainBudgetModel() {
+        String url = pythonApiUrl + "/recommend/budget/train";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("x-api-key", pythonApiKey);
+
+        ResponseEntity<Map> response = restTemplate.exchange(
+                url,
+                HttpMethod.POST,
+                new HttpEntity<>(headers),
+                Map.class
+        );
+        return response.getBody();
+    }
+
+    public Map<String, Object> predictTouristBudget(Map<String, Object> requestBody) {
+        String url = pythonApiUrl + "/recommend/budget";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("x-api-key", pythonApiKey);
+
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
+        ResponseEntity<Map> response = restTemplate.exchange(
+                url,
+                HttpMethod.POST,
+                requestEntity,
+                Map.class
+        );
+        return response.getBody();
+    }
 }
