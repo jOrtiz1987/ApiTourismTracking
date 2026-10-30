@@ -66,6 +66,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/api/lugares-usuario", "/api/lugares-usuario/").authenticated()
                 .antMatchers(HttpMethod.GET, "/api/usuarios/*").authenticated()
                 .antMatchers(HttpMethod.PUT, "/api/usuarios/*").authenticated()
+                .antMatchers(HttpMethod.GET, "/api/recomendaciones/**").authenticated()
                 // Todo lo demás (listados, catálogo, reportes y modelos) es solo para administradores
                 .anyRequest().hasRole("ADMIN")
                 .and()
