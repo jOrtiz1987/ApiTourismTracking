@@ -1,5 +1,7 @@
 package com.example.microserviciosdemo.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -15,6 +17,8 @@ public class Usuario {
     @Column(name = "correo")
     private String correo;
 
+    // Solo se recibe (registro / cambio); nunca se devuelve en las respuestas JSON.
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "password")
     private String password;
 

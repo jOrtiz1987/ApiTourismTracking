@@ -1,9 +1,14 @@
 package com.example.microserviciosdemo.controller;
 
 import com.example.microserviciosdemo.entity.PeriodoVacacional;
+import com.example.microserviciosdemo.entity.Usuario;
 import com.example.microserviciosdemo.repository.PeriodoVacacionalRepository;
+import com.example.microserviciosdemo.repository.UsuarioRepository;
+import com.example.microserviciosdemo.security.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -12,10 +17,12 @@ import java.util.List;
 public class PeriodoVacacionalController {
 
     private final PeriodoVacacionalRepository repository;
+    private final UsuarioRepository usuarioRepository;
 
     @Autowired
-    public PeriodoVacacionalController(PeriodoVacacionalRepository repository) {
+    public PeriodoVacacionalController(PeriodoVacacionalRepository repository, UsuarioRepository usuarioRepository) {
         this.repository = repository;
+        this.usuarioRepository = usuarioRepository;
     }
 
     @GetMapping
@@ -31,6 +38,15 @@ public class PeriodoVacacionalController {
 
     @PostMapping
     public PeriodoVacacional createPeriodoVacacional(@RequestBody PeriodoVacacional periodoVacacional) {
+        // Siempre crea uno nuevo y solo para el propio usuario (o cualquiera si es administrador)
+        if (periodoVacacional.getUsuario() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Falta el usuario");
+        }
+        Usuario usuario = usuarioRepository.findById(periodoVacacional.getUsuario().getIdUsuario())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado"));
+        SecurityUtil.exigirDuenoOAdmin(usuario.getCorreo());
+        periodoVacacional.setIdPeriodoVacacional(0);
+        periodoVacacional.setUsuario(usuario);
         return repository.save(periodoVacacional);
     }
 

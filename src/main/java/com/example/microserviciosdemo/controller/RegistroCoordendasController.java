@@ -5,6 +5,9 @@ import com.example.microserviciosdemo.entity.RegistroCoordendas;
 import com.example.microserviciosdemo.repository.LugarInteresRepository;
 import com.example.microserviciosdemo.repository.RegistroCoordendasRepository;
 import com.example.microserviciosdemo.repository.UsuarioRepository;
+import com.example.microserviciosdemo.entity.Usuario;
+import com.example.microserviciosdemo.security.SecurityUtil;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +51,11 @@ public class RegistroCoordendasController {
         coordenadas.setLatitud(latitude);
         coordenadas.setLongitud(longitud);
         coordenadas.setFecha(new Date()); // Establecer la fecha actual
-        coordenadas.setUsuario(usuarioController.getById(idUsuario)); // Establecer el ID del usuario correspondiente
+        Usuario usuario = usuarioController.findById(idUsuario)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado"));
+        // Solo se pueden registrar coordenadas del propio usuario (o como administrador)
+        SecurityUtil.exigirDuenoOAdmin(usuario.getCorreo());
+        coordenadas.setUsuario(usuario);
 
         // Registrar las coordenadas
         repository.save(coordenadas);

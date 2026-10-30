@@ -7,6 +7,7 @@ import com.example.microserviciosdemo.entity.VisitaRequest;
 import com.example.microserviciosdemo.repository.LugarInteresRepository;
 import com.example.microserviciosdemo.repository.UsuarioRepository;
 import com.example.microserviciosdemo.repository.VisitaRepository;
+import com.example.microserviciosdemo.security.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,6 +46,8 @@ public class VisitaController {
                 .orElseThrow(() -> new IllegalArgumentException("LugarInteres no encontrado"));
         Usuario usuario = usuarioRepository.findById(visita.getIdUsuario())
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+        // Un usuario solo puede registrar sus propias visitas (los administradores, cualquiera)
+        SecurityUtil.exigirDuenoOAdmin(usuario.getCorreo());
         nuevaVisita.setLugarInteres(lugarInteres);
         nuevaVisita.setUsuario(usuario);
         nuevaVisita.setFecha(visita.getFecha());

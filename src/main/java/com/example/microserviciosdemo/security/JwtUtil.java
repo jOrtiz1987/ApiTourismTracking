@@ -4,9 +4,13 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
@@ -16,10 +20,23 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
 
-    // Ideally, this key should be read from application.properties
-    // We are generating a secure key for HS256
-    private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    private static final Logger log = LoggerFactory.getLogger(JwtUtil.class);
+
+    private final Key key;
     private final long jwtExpirationInMs = 1000 * 60 * 60 * 10; // 10 hours
+
+    /**
+     * La llave se toma de JWT_SECRET (al menos 32 caracteres) para que las sesiones
+     * sobrevivan a los reinicios. Si no se define, se genera una al arrancar.
+     */
+    public JwtUtil(@Value("${app.jwt.secret:}") String secreto) {
+        if (secreto != null && secreto.getBytes(StandardCharsets.UTF_8).length >= 32) {
+            this.key = Keys.hmacShaKeyFor(secreto.getBytes(StandardCharsets.UTF_8));
+        } else {
+            log.warn("JWT_SECRET no definido o menor a 32 caracteres: se genera una llave temporal; las sesiones se perderán al reiniciar.");
+            this.key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+        }
+    }
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);

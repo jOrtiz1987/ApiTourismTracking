@@ -13,13 +13,27 @@ public class ReportService {
     @Value("${python.api.url:http://localhost:8000}")
     private String pythonApiUrl;
 
-    @Value("${python.api.key:dev-key}")
+    // Llave compartida con data-info (variable de entorno PYTHON_API_KEY); sin valor por defecto
+    @Value("${python.api.key}")
     private String pythonApiKey;
 
     private final RestTemplate restTemplate;
 
+    // Los reportId que genera data-info son los primeros 10 caracteres de un UUID
+    private static final java.util.regex.Pattern REPORT_ID = java.util.regex.Pattern.compile("^[a-f0-9-]{1,36}$");
+
     public ReportService() {
-        this.restTemplate = new RestTemplate();
+        org.springframework.http.client.SimpleClientHttpRequestFactory factory =
+                new org.springframework.http.client.SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(10_000);
+        factory.setReadTimeout(300_000); // el entrenamiento de modelos puede tardar varios minutos
+        this.restTemplate = new RestTemplate(factory);
+    }
+
+    private static void validarReportId(String reportId) {
+        if (reportId == null || !REPORT_ID.matcher(reportId).matches()) {
+            throw new org.springframework.web.server.ResponseStatusException(HttpStatus.BAD_REQUEST, "reportId inválido");
+        }
     }
 
     /**
@@ -58,6 +72,7 @@ public class ReportService {
      * GET /reports/{reportId}/excel
      */
     public ResponseEntity<byte[]> downloadExcel(String reportId) {
+        validarReportId(reportId);
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("x-api-key", pythonApiKey);
@@ -89,6 +104,7 @@ public class ReportService {
      * donde type = heatmap | clusters
      */
     public ResponseEntity<byte[]> downloadHtml(String reportId, String type, String filename) {
+        validarReportId(reportId);
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("x-api-key", pythonApiKey);

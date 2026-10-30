@@ -6,6 +6,9 @@ import com.example.microserviciosdemo.entity.PeriodoVacacional;
 import com.example.microserviciosdemo.repository.CategoriaRepository;
 import com.example.microserviciosdemo.repository.LugaresPorUsuarioRepository;
 import com.example.microserviciosdemo.repository.PeriodoVacacionalRepository;
+import com.example.microserviciosdemo.security.SecurityUtil;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -53,7 +56,11 @@ public class LugaresPorUsuarioController {
             PeriodoVacacional periodoVacacional = periodoVacacionalRepository
                     .findById(request.getIdPeriodoVacacional().getIdPeriodoVacacional())
                     .orElseThrow(() -> new IllegalArgumentException("PeriodoVacacional no encontrado"));
+            // Solo se pueden agregar preferencias a un periodo propio (o como administrador)
+            SecurityUtil.exigirDuenoOAdmin(periodoVacacional.getUsuario() != null ? periodoVacacional.getUsuario().getCorreo() : null);
             nuevoLugar.setIdPeriodoVacacional(periodoVacacional);
+        } else if (!SecurityUtil.esAdmin()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Falta el periodo vacacional");
         }
 
         return repository.save(nuevoLugar);

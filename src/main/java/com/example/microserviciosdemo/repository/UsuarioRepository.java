@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
 
-    Optional<Usuario> findByCorreoAndPassword(String correo, String password);
+    // findByCorreoAndPassword eliminado: las contrasenas ahora se comparan con BCrypt
 
     Optional<Usuario> findByCorreo(String correo);
 

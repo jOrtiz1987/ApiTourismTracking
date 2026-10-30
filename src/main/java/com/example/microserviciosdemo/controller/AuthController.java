@@ -1,6 +1,8 @@
 package com.example.microserviciosdemo.controller;
 
 import com.example.microserviciosdemo.security.JwtUtil;
+import com.example.microserviciosdemo.security.LegacyAwarePasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import com.example.microserviciosdemo.security.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +31,9 @@ public class AuthController {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @PostMapping("/login")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest)
             throws Exception {
@@ -49,7 +54,14 @@ public class AuthController {
         Usuario usuario = usuarioRepository.findByCorreo(authenticationRequest.getCorreo())
                 .orElseThrow(() -> new RuntimeException("User not found after authentication"));
 
-        return ResponseEntity.ok(new AuthenticationResponse(jwt, usuario.getIdUsuario(), usuario.getNombre()));
+        // Migración: si la contraseña seguía en texto plano, se guarda ya cifrada con BCrypt
+        if (LegacyAwarePasswordEncoder.esLegada(usuario.getPassword())) {
+            usuario.setPassword(passwordEncoder.encode(authenticationRequest.getPassword()));
+            usuarioRepository.save(usuario);
+        }
+
+        boolean admin = userDetailsService.esCorreoAdmin(usuario.getCorreo());
+        return ResponseEntity.ok(new AuthenticationResponse(jwt, usuario.getIdUsuario(), usuario.getNombre(), admin));
     }
 }
 
@@ -86,11 +98,17 @@ class AuthenticationResponse {
     private final String jwt;
     private final Integer idUsuario;
     private final String nombre;
+    private final boolean admin;
 
-    public AuthenticationResponse(String jwt, Integer idUsuario, String nombre) {
+    public AuthenticationResponse(String jwt, Integer idUsuario, String nombre, boolean admin) {
         this.jwt = jwt;
         this.idUsuario = idUsuario;
         this.nombre = nombre;
+        this.admin = admin;
+    }
+
+    public boolean isAdmin() {
+        return admin;
     }
 
     public String getJwt() {
